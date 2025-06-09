@@ -70,8 +70,51 @@ if(WIN32)
         DOC "Path to windeployqt executable"
     )
     
+    # Find common DLL paths for manual copying
+    set(DLL_SEARCH_PATHS
+        "C:/msys64/mingw64/bin"
+        "C:/Qt/Tools/mingw*/bin"
+        "${Qt6_DIR}/../../../bin"
+        "${Qt6Core_DIR}/../../../bin"
+        "C:/Qt/6.*/mingw*/bin"
+    )
+    
+    # Function to find and copy DLL
+    function(find_and_copy_dll dll_name target_dir)
+        find_file(${dll_name}_PATH
+            NAMES ${dll_name}
+            PATHS ${DLL_SEARCH_PATHS}
+            NO_DEFAULT_PATH
+        )
+        
+        if(${dll_name}_PATH)
+            message(STATUS "Found ${dll_name}: ${${dll_name}_PATH}")
+            list(APPEND FOUND_DLLS ${${dll_name}_PATH})
+            set(FOUND_DLLS ${FOUND_DLLS} PARENT_SCOPE)
+        else()
+            message(WARNING "Could not find ${dll_name} in search paths")
+        endif()
+    endfunction()
+    
     if(WINDEPLOYQT_EXECUTABLE)
         message(STATUS "Found windeployqt: ${WINDEPLOYQT_EXECUTABLE}")
+        
+        # Find required DLLs
+        set(FOUND_DLLS)
+        find_and_copy_dll("libfreetype-6.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libharfbuzz-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libpng16-16.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libmd4c.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libbz2-1.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libzstd.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libbrotlicommon.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libbrotlidec.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libglib-2.0-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libgraphite2.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libintl-8.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libiconv-2.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libpcre2-16-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("zlib1.dll" "${CMAKE_BINARY_DIR}/deploy")
         
         # Add custom target for deployment
         add_custom_target(deploy
@@ -82,9 +125,50 @@ if(WIN32)
             COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:QTCIDE>" "${CMAKE_BINARY_DIR}/deploy/"
             COMMAND ${CMAKE_COMMAND} -E echo "Running windeployqt..."
             COMMAND ${WINDEPLOYQT_EXECUTABLE} --verbose 2 --force --compiler-runtime --dir "${CMAKE_BINARY_DIR}/deploy" "${CMAKE_BINARY_DIR}/deploy/QTCIDE.exe"
+            COMMAND ${CMAKE_COMMAND} -E echo "Copying additional DLLs..."
+            COMMAND ${CMAKE_COMMAND} -P "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "Deployment completed successfully!"
-            DEPENDS QTCIDE
+            DEPENDS QTCIDE copy_dlls_script
             COMMENT "Deploying Qt libraries and creating standalone package"
+            VERBATIM
+        )
+        
+        # Create a script to copy additional DLLs
+        add_custom_target(copy_dlls_script
+            COMMAND ${CMAKE_COMMAND} -E echo "# DLL Copy Script" > "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "set(DLL_SEARCH_PATHS \"${DLL_SEARCH_PATHS}\")" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "set(REQUIRED_DLLS" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libfreetype-6.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libharfbuzz-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libpng16-16.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libmd4c.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libbz2-1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libzstd.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libbrotlicommon.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libbrotlidec.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libglib-2.0-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libgraphite2.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libintl-8.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libiconv-2.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libpcre2-16-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    zlib1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo ")" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "foreach(dll IN LISTS REQUIRED_DLLS)" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    find_file(\${dll}_PATH" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "        NAMES \${dll}" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "        PATHS \${DLL_SEARCH_PATHS}" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "        NO_DEFAULT_PATH" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    )" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    if(\${dll}_PATH)" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "        message(STATUS \"Copying \${dll}: \${\${dll}_PATH}\")" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "        file(COPY \${\${dll}_PATH} DESTINATION \"${CMAKE_BINARY_DIR}/deploy\")" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    else()" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "        message(WARNING \"Could not find \${dll}\")" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    endif()" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "endforeach()" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMENT "Creating DLL copy script"
             VERBATIM
         )
         
@@ -114,9 +198,9 @@ if(WIN32)
     else()
         message(WARNING "windeployqt not found. Deployment targets will not be available.")
         message(STATUS "Searched paths:")
-        message(STATUS "  - ${Qt6_DIR}/../../../bin")
-        message(STATUS "  - C:/Qt/*/bin")
-        message(STATUS "  - C:/msys64/mingw64/bin")
+        foreach(path IN LISTS DLL_SEARCH_PATHS)
+            message(STATUS "  - ${path}")
+        endforeach()
         message(STATUS "Please ensure Qt development tools are installed and in PATH")
         
         # Create dummy targets
@@ -132,16 +216,33 @@ if(WIN32)
         )
     endif()
     
-    # Manual deployment fallback
+    # Manual deployment fallback with DLL copying
     add_custom_target(deploy-manual
-        COMMAND ${CMAKE_COMMAND} -E echo "Manual deployment - copying executable only..."
+        COMMAND ${CMAKE_COMMAND} -E echo "Manual deployment - copying executable and searching for DLLs..."
         COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_BINARY_DIR}/deploy-manual"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/deploy-manual"
         COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:QTCIDE>" "${CMAKE_BINARY_DIR}/deploy-manual/"
+        COMMAND ${CMAKE_COMMAND} -P "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "Manual deployment completed at: ${CMAKE_BINARY_DIR}/deploy-manual"
-        COMMAND ${CMAKE_COMMAND} -E echo "Note: You need to manually copy Qt DLLs for distribution"
-        DEPENDS QTCIDE
-        COMMENT "Manual deployment (executable only)"
+        COMMAND ${CMAKE_COMMAND} -E echo "Note: Some Qt DLLs may still be missing. Test the executable."
+        DEPENDS QTCIDE copy_dlls_manual_script
+        COMMENT "Manual deployment with DLL search"
+        VERBATIM
+    )
+    
+    # Create manual DLL copy script
+    add_custom_target(copy_dlls_manual_script
+        COMMAND ${CMAKE_COMMAND} -E echo "# Manual DLL Copy Script" > "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "set(DLL_SEARCH_PATHS \"${DLL_SEARCH_PATHS}\")" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "set(REQUIRED_DLLS libfreetype-6.dll libharfbuzz-0.dll libpng16-16.dll libmd4c.dll)" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "foreach(dll IN LISTS REQUIRED_DLLS)" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "    find_file(\${dll}_PATH NAMES \${dll} PATHS \${DLL_SEARCH_PATHS} NO_DEFAULT_PATH)" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "    if(\${dll}_PATH)" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "        message(STATUS \"Copying \${dll}\")" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "        file(COPY \${\${dll}_PATH} DESTINATION \"${CMAKE_BINARY_DIR}/deploy-manual\")" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "    endif()" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "endforeach()" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMENT "Creating manual DLL copy script"
         VERBATIM
     )
 endif()
