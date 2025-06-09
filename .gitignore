@@ -1,0 +1,140 @@
+# Build directories
+build/
+Build/
+BUILD/
+*build*/
+cmake-build-*/
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Generated files
+*.user
+*.user.*
+*.pro.user
+*.pro.user.*
+.qmake.cache
+.qmake.stash
+
+# Qt MOC files
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*_automoc.cpp
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Qt Linguist
+*.qm
+
+# Qt Creator
+*.autosave
+*.orig
+
+# Visual Studio
+*.vs/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# Log files
+*.log
+
+# Configuration files (if they contain sensitive data)
+config.ini
+settings.ini
+
+# Dependencies
+**/node_modules/
+**/vendor/
+
+# Build artifacts
+*.pdb
+*.idb
+*.ilk
+*.map
+*.exp
+*.lib
+*.manifest
+*.res
+
+# Ninja build files
+.ninja_deps
+.ninja_log
+rules.ninja
+build.ninja
+
+# Coverage files
+*.gcno
+*.gcda
+*.gcov
+
+# Documentation build
+docs/_build/
+docs/html/
+docs/latex/
+
+# Package files
+*.deb
+*.rpm
+*.pkg
+*.dmg
