@@ -1,9 +1,0 @@
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/QTCIDE.dir
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/edit_cache.dir
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/rebuild_cache.dir
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/list_install_components.dir
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/install.dir
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/install/local.dir
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/install/strip.dir
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/QTCIDE_autogen_timestamp_deps.dir
-C:/Users/shahrear/Documents/QTCIDE/build/CMakeFiles/QTCIDE_autogen.dir
