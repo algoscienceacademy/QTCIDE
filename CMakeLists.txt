@@ -99,22 +99,79 @@ if(WIN32)
     if(WINDEPLOYQT_EXECUTABLE)
         message(STATUS "Found windeployqt: ${WINDEPLOYQT_EXECUTABLE}")
         
-        # Find required DLLs
+        # Find required DLLs - Comprehensive list
         set(FOUND_DLLS)
+        # Core Qt dependencies
         find_and_copy_dll("libfreetype-6.dll" "${CMAKE_BINARY_DIR}/deploy")
         find_and_copy_dll("libharfbuzz-0.dll" "${CMAKE_BINARY_DIR}/deploy")
         find_and_copy_dll("libpng16-16.dll" "${CMAKE_BINARY_DIR}/deploy")
         find_and_copy_dll("libmd4c.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # ICU libraries (International Components for Unicode)
+        find_and_copy_dll("libicuin77.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libicuuc77.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libicudt77.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libicuio77.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libicule77.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libiculx77.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libicutest77.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libicutu77.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # Double conversion library
+        find_and_copy_dll("libdouble-conversion.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # B2 and compression libraries
+        find_and_copy_dll("libb2-1.dll" "${CMAKE_BINARY_DIR}/deploy")
         find_and_copy_dll("libbz2-1.dll" "${CMAKE_BINARY_DIR}/deploy")
         find_and_copy_dll("libzstd.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("liblzma-5.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # Brotli compression
         find_and_copy_dll("libbrotlicommon.dll" "${CMAKE_BINARY_DIR}/deploy")
         find_and_copy_dll("libbrotlidec.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libbrotlienc.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # GLib and related
         find_and_copy_dll("libglib-2.0-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libgobject-2.0-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libgio-2.0-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libgmodule-2.0-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libgthread-2.0-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # Graphics and text rendering
         find_and_copy_dll("libgraphite2.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libfontconfig-1.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libexpat-1.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # Internationalization
         find_and_copy_dll("libintl-8.dll" "${CMAKE_BINARY_DIR}/deploy")
         find_and_copy_dll("libiconv-2.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libcharset-1.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # PCRE (Perl Compatible Regular Expressions)
         find_and_copy_dll("libpcre2-16-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libpcre2-8-0.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libpcre-1.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # Compression and archiving
         find_and_copy_dll("zlib1.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libz.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # SSL/TLS support
+        find_and_copy_dll("libssl-3-x64.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libcrypto-3-x64.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # Threading and synchronization
+        find_and_copy_dll("libwinpthread-1.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # C++ runtime (MinGW)
+        find_and_copy_dll("libgcc_s_seh-1.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libstdc++-6.dll" "${CMAKE_BINARY_DIR}/deploy")
+        
+        # Additional Qt dependencies
+        find_and_copy_dll("libQt6Network.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libQt6Xml.dll" "${CMAKE_BINARY_DIR}/deploy")
+        find_and_copy_dll("libQt6DBus.dll" "${CMAKE_BINARY_DIR}/deploy")
         
         # Add custom target for deployment
         add_custom_target(deploy
@@ -139,20 +196,53 @@ if(WIN32)
             COMMAND ${CMAKE_COMMAND} -E echo "set(DLL_SEARCH_PATHS \"${DLL_SEARCH_PATHS}\")" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "set(REQUIRED_DLLS" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # Core dependencies
             COMMAND ${CMAKE_COMMAND} -E echo "    libfreetype-6.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "    libharfbuzz-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "    libpng16-16.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "    libmd4c.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # ICU libraries
+            COMMAND ${CMAKE_COMMAND} -E echo "    libicuin77.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libicuuc77.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libicudt77.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libicuio77.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # Double conversion
+            COMMAND ${CMAKE_COMMAND} -E echo "    libdouble-conversion.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # B2 and compression
+            COMMAND ${CMAKE_COMMAND} -E echo "    libb2-1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "    libbz2-1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "    libzstd.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    liblzma-5.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # Brotli
             COMMAND ${CMAKE_COMMAND} -E echo "    libbrotlicommon.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "    libbrotlidec.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libbrotlienc.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # GLib
             COMMAND ${CMAKE_COMMAND} -E echo "    libglib-2.0-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libgobject-2.0-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libgio-2.0-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # Graphics
             COMMAND ${CMAKE_COMMAND} -E echo "    libgraphite2.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libfontconfig-1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libexpat-1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # Internationalization
             COMMAND ${CMAKE_COMMAND} -E echo "    libintl-8.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "    libiconv-2.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libcharset-1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # PCRE
             COMMAND ${CMAKE_COMMAND} -E echo "    libpcre2-16-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libpcre2-8-0.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # Compression
             COMMAND ${CMAKE_COMMAND} -E echo "    zlib1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libz.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # SSL
+            COMMAND ${CMAKE_COMMAND} -E echo "    libssl-3-x64.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libcrypto-3-x64.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # Threading
+            COMMAND ${CMAKE_COMMAND} -E echo "    libwinpthread-1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            # C++ runtime
+            COMMAND ${CMAKE_COMMAND} -E echo "    libgcc_s_seh-1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
+            COMMAND ${CMAKE_COMMAND} -E echo "    libstdc++-6.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo ")" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "foreach(dll IN LISTS REQUIRED_DLLS)" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
@@ -168,7 +258,7 @@ if(WIN32)
             COMMAND ${CMAKE_COMMAND} -E echo "        message(WARNING \"Could not find \${dll}\")" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "    endif()" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
             COMMAND ${CMAKE_COMMAND} -E echo "endforeach()" >> "${CMAKE_BINARY_DIR}/copy_dlls.cmake"
-            COMMENT "Creating DLL copy script"
+            COMMENT "Creating comprehensive DLL copy script"
             VERBATIM
         )
         
@@ -234,7 +324,13 @@ if(WIN32)
     add_custom_target(copy_dlls_manual_script
         COMMAND ${CMAKE_COMMAND} -E echo "# Manual DLL Copy Script" > "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "set(DLL_SEARCH_PATHS \"${DLL_SEARCH_PATHS}\")" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
-        COMMAND ${CMAKE_COMMAND} -E echo "set(REQUIRED_DLLS libfreetype-6.dll libharfbuzz-0.dll libpng16-16.dll libmd4c.dll)" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "set(REQUIRED_DLLS" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "    libfreetype-6.dll libharfbuzz-0.dll libpng16-16.dll libmd4c.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "    libicuin77.dll libicuuc77.dll libicudt77.dll libdouble-conversion.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "    libb2-1.dll libbz2-1.dll libzstd.dll libglib-2.0-0.dll libgraphite2.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "    libintl-8.dll libiconv-2.dll libpcre2-16-0.dll zlib1.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "    libwinpthread-1.dll libgcc_s_seh-1.dll libstdc++-6.dll" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo ")" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "foreach(dll IN LISTS REQUIRED_DLLS)" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "    find_file(\${dll}_PATH NAMES \${dll} PATHS \${DLL_SEARCH_PATHS} NO_DEFAULT_PATH)" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "    if(\${dll}_PATH)" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
@@ -242,7 +338,7 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E echo "        file(COPY \${\${dll}_PATH} DESTINATION \"${CMAKE_BINARY_DIR}/deploy-manual\")" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "    endif()" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
         COMMAND ${CMAKE_COMMAND} -E echo "endforeach()" >> "${CMAKE_BINARY_DIR}/copy_dlls_manual.cmake"
-        COMMENT "Creating manual DLL copy script"
+        COMMENT "Creating comprehensive manual DLL copy script"
         VERBATIM
     )
 endif()
